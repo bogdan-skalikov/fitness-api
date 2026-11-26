@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.deps/
+.deps2/
+.piptmp/
+*.db
+*.sqlite3
+.env
+.pytest_cache/
+pip-*/
+pytest-cache-files-*/
+.idea/
+.vscode/
