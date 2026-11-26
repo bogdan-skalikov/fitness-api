@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Высота — панель клуба</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div style="background:#fff1ea;color:#8a3b12;font:14px/1.4 'Segoe UI',Arial,sans-serif;padding:10px 16px;text-align:center;border-bottom:1px solid #f3cdb8;">Демо-режим: данные хранятся в браузере, сервер не используется. Настоящая версия — Python + FastAPI + PostgreSQL.</div>
+
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <div class="brand">
+      <span class="brand__mark">В</span>
+      <span class="brand__text">
+        <strong>Высота</strong>
+        <small>панель клуба</small>
+      </span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab is-active" data-tab="clients">Клиенты</button>
+      <button class="tab" data-tab="memberships">Абонементы</button>
+      <button class="tab" data-tab="trainings">Тренировки</button>
+      <button class="tab" data-tab="bookings">Запись</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="summary">
+    <div class="summary__item">
+      <span class="summary__value" id="sum-clients">0</span>
+      <small>клиентов</small>
+    </div>
+    <div class="summary__item">
+      <span class="summary__value" id="sum-trainings">0</span>
+      <small>тренировок</small>
+    </div>
+    <div class="summary__item">
+      <span class="summary__value" id="sum-bookings">0</span>
+      <small>записей</small>
+    </div>
+  </section>
+
+  <!-- КЛИЕНТЫ -->
+  <section class="panel is-active" id="panel-clients">
+    <div class="card">
+      <h2>Добавить клиента</h2>
+      <p class="hint">Нужны имя и телефон. Телефон должен быть уникальным — по нему клуб находит клиента.</p>
+      <form id="client-form" class="form">
+        <label>ФИО
+          <input name="full_name" required minlength="2" placeholder="Иван Петров" autocomplete="off">
+        </label>
+        <label>Телефон
+          <input name="phone" required placeholder="+7 900 000-00-00" autocomplete="off">
+        </label>
+        <button class="btn btn--primary" type="submit">Добавить клиента</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Клиенты клуба <span class="badge" id="clients-count">0</span></h2>
+      <div class="table-wrap">
+        <table class="table" id="clients-table">
+          <thead>
+            <tr><th>№</th><th>ФИО</th><th>Телефон</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty" id="clients-empty" hidden>Пока никого нет. Добавьте первого клиента — форма выше.</p>
+    </div>
+  </section>
+
+  <!-- АБОНЕМЕНТЫ -->
+  <section class="panel" id="panel-memberships" hidden>
+    <div class="card">
+      <h2>Оформить абонемент</h2>
+      <p class="hint">Без действующего абонемента записаться на тренировку нельзя: система не даст.</p>
+      <form id="membership-form" class="form">
+        <label>Клиент
+          <select name="client_id" id="membership-client" required></select>
+        </label>
+        <label>Дата начала
+          <input type="date" name="start_date" id="membership-start" required>
+        </label>
+        <label>Дата окончания
+          <input type="date" name="end_date" id="membership-end" required>
+        </label>
+        <label>Сколько посещений
+          <input type="number" name="visits_total" min="1" max="365" value="8" required>
+        </label>
+        <button class="btn btn--primary" type="submit">Оформить абонемент</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Абонементы клиента</h2>
+      <label class="inline">Показать для
+        <select id="membership-view-client"></select>
+      </label>
+      <div class="table-wrap">
+        <table class="table" id="memberships-table">
+          <thead>
+            <tr><th>Период</th><th>Осталось посещений</th><th>Статус</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty" id="memberships-empty" hidden>У этого клиента ещё нет абонементов.</p>
+    </div>
+  </section>
+
+  <!-- ТРЕНИРОВКИ -->
+  <section class="panel" id="panel-trainings" hidden>
+    <div class="card">
+      <h2>Добавить тренировку</h2>
+      <p class="hint">Укажите название, дату и сколько человек готовы принять.</p>
+      <form id="training-form" class="form">
+        <label>Название
+          <input name="title" required minlength="2" placeholder="Йога" autocomplete="off">
+        </label>
+        <label>Когда
+          <input type="datetime-local" name="starts_at" id="training-start" required>
+        </label>
+        <label>Мест на тренировке
+          <input type="number" name="capacity" min="1" max="500" value="10" required>
+        </label>
+        <button class="btn btn--primary" type="submit">Добавить в расписание</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Расписание <span class="badge" id="trainings-count">0</span></h2>
+      <div class="table-wrap">
+        <table class="table" id="trainings-table">
+          <thead>
+            <tr><th>Тренировка</th><th>Когда</th><th>Места</th><th>Состояние</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty" id="trainings-empty" hidden>Расписание пустое. Добавьте первую тренировку.</p>
+    </div>
+  </section>
+
+  <!-- ЗАПИСЬ -->
+  <section class="panel" id="panel-bookings" hidden>
+    <div class="card">
+      <h2>Записать клиента на тренировку</h2>
+      <p class="hint">Нужны клиент с действующим абонементом и свободные места.</p>
+      <form id="booking-form" class="form">
+        <label>Тренировка
+          <select name="training_id" id="booking-training" required></select>
+        </label>
+        <label>Клиент
+          <select name="client_id" id="booking-client" required></select>
+        </label>
+        <button class="btn btn--primary" type="submit">Записать</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Кто записан <span class="badge" id="bookings-count">0</span></h2>
+      <div class="table-wrap">
+        <table class="table" id="bookings-table">
+          <thead>
+            <tr><th>Клиент</th><th>Тренировка</th><th>Когда</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty" id="bookings-empty" hidden>Записей пока нет.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    Для разработчика: техническая документация API — <a href="/docs">/docs</a>
+  </footer>
+</main>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="app.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
